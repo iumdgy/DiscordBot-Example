@@ -14,7 +14,7 @@ namespace Discord
         const string PAYLOAD = @"{
     ""op"": 2,
     ""d"": {
-        ""token"": ""NzU0Njk4MTU0Nzc1MDE5NTgw.X14hbQ.Nt3KyFUqOmu5CfoTzCgBiYEo0r8"",
+        ""token"": ""T"",
         ""properties"": {
             ""$os"": ""linux"",
             ""$browser"": ""disco"",
@@ -30,7 +30,7 @@ namespace Discord
         const string RESUME = @"{
   ""op"": 6,
   ""d"": {
-    ""token"": ""NzU0Njk4MTU0Nzc1MDE5NTgw.X14hbQ.Nt3KyFUqOmu5CfoTzCgBiYEo0r8"",
+    ""token"": ""T"",
     ""session_id"": ""session_id_i_stored"",
     ""seq"": 1337
   }
