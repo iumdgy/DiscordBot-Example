@@ -1,12 +1,18 @@
 ﻿using System;
 using System.Net;
-using System.Net.Sockets;
+using System.Net.WebSockets;
+using System.Threading;
+using Discord.Payload;
 
-namespace DiscordBot
+namespace Discord
 {
     class Client
     {
-        Socket client;
+        const string GATEWAY_URI = "wss://gateway.discord.gg/?v=6&encoding=json";
+
+        ClientWebSocket client;
+        byte[] buffer = new byte[4096];
+        CancellationToken cat = new CancellationToken();
 
         static void Main(string[] args)
         {
@@ -16,8 +22,8 @@ namespace DiscordBot
 
         public void Start()
         {
-            client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            client.Connect(new IPEndPoint(Dns.GetHostEntry("gateway.discord.gg").AddressList[0], 443));
+            client = new ClientWebSocket();
+            client.ConnectAsync(new Uri(GATEWAY_URI), cat);
         }
     }
 }
