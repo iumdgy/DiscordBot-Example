@@ -9,7 +9,7 @@ namespace Discord
     {
         static void Main()
         {
-            Client client = new Client("NzU0Njk4MTU0Nzc1MDE5NTgw.X14hbQ.X2iYmIVkfhxtfnSAyvFMPIE7W38");
+            Client client = new Client("YOUR TOKEN HERE");
             client.Connect();
             Console.ReadLine();
         }
