@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using static Discord.Payload.Payload;
 
 namespace Discord
 {
@@ -26,7 +27,6 @@ namespace Discord
             client = new ClientWebSocket();
             await client.ConnectAsync(new Uri(GATEWAY_URI), CancellationToken.None);
             await client.ReceiveAsync(buffer, CancellationToken.None);
-
             JObject json = JObject.Parse(Encoding.UTF8.GetString(buffer));
             Array.Clear(buffer, 0, buffer.Length);
 
@@ -34,30 +34,38 @@ namespace Discord
             string s = json["s"].ToString();
             string op = json["op"].ToString();
             int heartbeatInterval = int.Parse(json["d"]["heartbeat_interval"].ToString());
-            Console.WriteLine(json.ToString());
-            Thread sendHeartbeat = new Thread(() => SendHeartbeat(heartbeatInterval));
-            sendHeartbeat.Start();
-            SendIdentify();
+            ReceiveAsync();
+            SendHeartbeatAsync(heartbeatInterval);
+            await SendIdentifyAsync();
 
         }
 
-        async void SendIdentify()
+        async Task SendIdentifyAsync()
         {
-            string properties = @"{""$os"" : ""window"", ""$browser"" : ""c#"", ""$device"" : ""c#""}";
-            string identify = @$"{{""op"" : 2, ""d"" : {{""token"" : ""{TOKEN}"", ""properties"" : {properties}}} }}";
+            JObject json = JObject.Parse(identify);
+            json["d"]["token"] = TOKEN;
+            identify = json.ToString();
             await client.SendAsync(new ArraySegment<byte>(encoding.GetBytes(identify)), WebSocketMessageType.Text, true, CancellationToken.None);
-            await client.ReceiveAsync(buffer, CancellationToken.None);
-            Console.WriteLine(Encoding.UTF8.GetString(buffer));
         }
 
-        async void SendHeartbeat(int interval)
+        async void SendHeartbeatAsync(int interval)
         {
-            string h = @"{""op"" : 1, ""d"" : null}";
             while (true)
             {
-                await client.SendAsync(new ArraySegment<byte>(encoding.GetBytes(h)), WebSocketMessageType.Text, true, CancellationToken.None);
+                await client.SendAsync(new ArraySegment<byte>(encoding.GetBytes(heartbeat)), WebSocketMessageType.Text, true, CancellationToken.None);
                 await Task.Delay(interval);
             }
         }
+
+        async void ReceiveAsync()
+        {
+            while (true)
+            {
+                await client.ReceiveAsync(buffer, CancellationToken.None);
+                Console.WriteLine(encoding.GetString(buffer));
+                Array.Clear(buffer, 0, buffer.Length);
+            }
+        }
+
     }
 }
